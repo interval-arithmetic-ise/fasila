@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+
+import struct
+import argparse
+
+def f64_to_interval(f64_value: float):
+    """Splits a f64 into two f32 intervals."""
+    # Convert f64 to raw bits
+    f64_bits = struct.unpack("Q", struct.pack("d", f64_value))[0]
+    
+    # Extract the lower and upper 32-bit halves
+    lower_bits = f64_bits & 0xFFFFFFFF
+    upper_bits = (f64_bits >> 32) & 0xFFFFFFFF
+    
+    # Convert to f32 values
+    lower_f32 = struct.unpack("f", struct.pack("I", lower_bits))[0]
+    upper_f32 = struct.unpack("f", struct.pack("I", upper_bits))[0]
+    
+    print(f"Lower Bound (f32): {lower_f32}")
+    print(f"Upper Bound (f32): {upper_f32}")
+
+def interval_to_f64(lower_f32: float, upper_f32: float):
+    """Combines two f32 values into a single f64."""
+    # Convert f32 values to raw bits
+    lower_bits = struct.unpack("I", struct.pack("f", lower_f32))[0]
+    upper_bits = struct.unpack("I", struct.pack("f", upper_f32))[0]
+    
+    # Concatenate into a 64-bit integer
+    f64_bits = (upper_bits << 32) | lower_bits
+    
+    # Convert back to f64
+    f64_value = struct.unpack("d", struct.pack("Q", f64_bits))[0]
+    print(f"Packed f64: {f64_value}")
+
+def main():
+    parser = argparse.ArgumentParser(description="Pack and unpack interval representations.")
+    subparsers = parser.add_subparsers(dest="command")
+    
+    # Subcommand: f64 to interval
+    parser_f64_to_interval = subparsers.add_parser("fi", help="Convert f64 to interval representation.")
+    parser_f64_to_interval.add_argument("value", type=float, help="The f64 value to split into intervals.")
+    
+    # Subcommand: interval to f64
+    parser_interval_to_f64 = subparsers.add_parser("if", help="Convert interval representation to f64.")
+    parser_interval_to_f64.add_argument("lower", type=float, help="Lower bound (f32).")
+    parser_interval_to_f64.add_argument("upper", type=float, help="Upper bound (f32).")
+    
+    args = parser.parse_args()
+    
+    if args.command == "fi":
+        f64_to_interval(args.value)
+    elif args.command == "if":
+        interval_to_f64(args.lower, args.upper)
+    else:
+        parser.print_help()
+
+if __name__ == "__main__":
+    main()
