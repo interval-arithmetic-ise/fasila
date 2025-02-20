@@ -1,11 +1,11 @@
-[build]
-target = "riscv64gc-unknown-none-elf"
-# target = "riscv32i-unknown-none-elf"
-# target = "riscv64imac-unknown-none-elf"
-rustflags = [
-    "-C", "link-arg=--Ttext=0x80000000",
-    "-C", "target-feature=+xfintf"
-]
+# [build]
+# target = "riscv64gc-unknown-none-elf"
+# # target = "riscv32i-unknown-none-elf"
+# # target = "riscv64imac-unknown-none-elf"
+# rustflags = [
+#     "-C", "link-arg=--Ttext=0x80000000",
+#     "-C", "target-feature=+xfintf"
+# ]
 
-[target.'cfg(target_os = "none")']
-linker = "lld"
+# [target.'cfg(target_os = "none")']
+# linker = "lld"
